@@ -1,0 +1,161 @@
+{% extends  'index.html' %}
+{{ csrf_token () }}
+
+{% block title %}
+    Швейцарская система
+{% endblock %}
+
+{% block content %}
+    {% block scripts %}
+        <script type="text/javascript">
+            {#const sendValues = document.querySelector('#widget_policy');#}
+            {#sendValues.addEventListener('click', function(e){alert('CHF')}#}
+            $("#f1").click(function () {
+                alert('sdsd')
+            }
+
+
+            {#    form_value_3.value = form_value_1.value;#}
+            {#    form_value_4.value = form_value_2.value;#}
+
+            {#        при нажатии срабатывает#}
+
+            {#            r=[];#}
+            {#            $("#players").dblclick(function ()#}
+            {#            {#}
+            {#                var t = $('#players option:selected ').text(function (index, value)#}
+            {#                {#}
+            {#                    return value#}
+            {#                });#}
+            {##}
+            {#                r.push(t.val())#}
+            {##}
+            {##}
+            {#                    return $('#FormControlSelect').append(#}
+            {#                        "<option value=\"t.val()\">" + t.text() + "</option>");#}
+            {##}
+            {##}
+            {##}
+
+            {#)#}
+
+            {#            ;#}
+        </script>
+        {##}
+        {{ super() }}
+    {% endblock %}
+
+    <div class="d-flex justify-content-center">
+
+        <h3>Добавьте игроков участвующих в турнире</h3>
+
+    </div>
+
+     {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert" align="center">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+    {#        <div class="d-flex justify-content-center">#}
+    {##}
+    {#        <div class="p-lg-2">#}
+    {#            <form method="post" id="fff">#}
+    {#                {{ form.players(size=10, multiple=True, class="form-control-lg") }}#}
+    {#            {{ form.submint(class='btn btn-primary') }}#}
+    {#            </form>#}
+    {#        </div>#}
+    {##}
+    {##}
+    {#        <div class="p-lg-2">#}
+    {##}
+    {#            <form action="/swiss_sistem" method="post" id="ffff">#}
+    {##}
+    {#                    <select multiple class="form-control-lg" id="FormControlSelect" size="10" placeholder="добавьте сюда" name="players1">#}
+    {##}
+    {#                    </select>#}
+    {##}
+    {#            <input class="btn btn-primary" type="submit" value="Submit" id="sub1">#}
+    {#            </form>#}
+    {#        {% for tab in table %}#}
+    {#            <p>  {{ tab[0] }} -- {{ tab[1] }}</p>#}
+    {#        {% endfor %}#}
+    {##}
+    {#        </div>#}
+    {#    </div>#}
+    {#    <!-- Button trigger modal -->#}
+    {#<div class="page-header">#}
+    {##}
+    {#    <div class="col-md-4">#}
+    {#        {{ wtf.quick_form(form) }}#}
+    {#    </div>#}
+    {#</div>#}
+    {##}
+    {#</div>#}
+    <div class="container">
+
+        <div class="row">
+            {% if form %}
+                <form method="post" id="f1">
+                    <div>Отсортируйте игроков по дате рождения</div>
+                    {{ form.widget_policy }} - {{ form.end_data }}
+                    {{ form.submint(class="btn btn-primary") }}
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row d-flex justify-content-center">
+        <form action="{{ url_for('swiss_sistem.table_party') }}" method="post" name="checks">
+
+            {% if p_none %}
+                {{ pass }}
+            {% else %}
+                {{ pagination.info }}
+                {{ pagination.links }}
+            {% endif %}
+            <table class="table table-sm">
+                <thead>
+                <tr>
+                    <th scope="col">№</th>
+                    <th scope="col">выбор</th>
+                    <th scope="col">Фамилия</th>
+                    <th scope="col">Имя</th>
+                </tr>
+                </thead>
+
+                {% for dat in pages.items |sort(attribute='lastname') %}
+                    <tbody>
+                    <tr>
+                        <th>{{ loop.index+pagination.skip }}</th>
+                        <th scope="row"><input type="checkbox" name='checks' value='{{ dat.id }}'></th>
+                        <th>{{ dat.lastname }}</th>
+                        <th>
+                            {{ dat.name }}
+                        <th>
+                    </tr>
+                    </tbody>
+
+                {% endfor %}
+            </table>
+            {% if p_none %}
+                {{ pass }}
+            {% else %}
+                {{ pagination.links }}
+            {% endif %}
+            <input class="btn btn-primary" type="submit" value="Submit">
+
+{#                            {{ form.submint(class='btn btn-primary') }}#}
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col">
+
+        </div>
+    </div>
+{% endblock %}

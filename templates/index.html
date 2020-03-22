@@ -1,0 +1,97 @@
+{% extends "bootstrap/base.html" %}
+
+<!DOCTYPE html>
+{% block html_attribs %} lang="en"{% endblock %}
+{% block title %} Заголовок сайта {% endblock %}
+
+<head>
+    <meta charset="UTF-8">
+{#    <link rel="stylesheet" type="text/css" href="bootstap.css">#}
+{#    <script type="text/javascript" src="jquery.js"></script>#}
+</head>
+
+<body>
+
+{#панель навбар#}
+
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand text-primary" href="/">Шахматный дом</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('hello_world') }}">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    {% if current_user.has_role('user') %}
+                        <a class="nav-link" href="logout">Logout</a>
+
+                    {% else %}
+                        <a class="nav-link" href="{{ url_for('security.login') }}">Login</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if current_user.has_role('user') %}
+                        <a class="nav-link" href="/admin">Adminka</a>
+                    {% endif %}
+                </li>
+            <li class="nav-item">
+                    {% if current_user.has_role('user') %}
+                        <a class="nav-link" href="{{ url_for('swiss_sistem.swissistem') }}">Турнир</a>
+                    {% endif %}
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+{% endblock %}
+
+{#основной кусок программы#}
+
+{% block content %}
+
+
+    <h1>hi</h1>
+    <a href="{{ url_for('statistic.hello') }}">statistic</a>
+    {% if current_user.has_role('admin') %}
+        <h3>akjshdfklhdfh</h3>
+
+    {% endif %}
+
+    <a href="logout">logout</a>
+
+    {% block cont %}
+    {% endblock %}
+
+{#    {% block scripts %}#}
+{#        <script src="{{bootstrap_find_resource('jquery.js', cdn='jquery')}}"></script>#}
+{#        <script src="{{bootstrap_find_resource('js/bootstrap.js', cdn='bootstrap')}}"></script>'#}
+{#    {% endblock scripts %}#}
+
+{% endblock %}
+
+</body>
+</html>

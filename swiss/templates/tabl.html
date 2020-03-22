@@ -1,0 +1,73 @@
+{% extends  'index.html' %}
+{{ csrf_token () }}
+
+{% block title %}
+    Турнирная таблица
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+
+        <div class="row d-flex justify-content-center">
+            <h3>Таблица распределения по парам</h3>
+            <p></p>
+        </div>
+
+        <div class="row d-flex justify-content-center">
+            <form action="{{ url_for('swiss_sistem.turnir') }}" method="post" name="table">
+
+                <div class="row d-flex justify-content-center">
+                    {{ form.nameturnir(size=30, class='text-center') }}
+                </div>
+
+                <p></p>
+                <table class="table table-sm">
+                    <thead>
+                    <tr>
+                        <th scope="col">№</th>
+                        <th scope="col"></th>
+                        <th scope="col">Фамилия</th>
+                        <th scope="col">Имя</th>
+                        <th></th>
+                        <th scope="col">Фамилия</th>
+                        <th scope="col">Имя</th>
+                    </tr>
+                    </thead>
+
+                    {% for dat in play_tab %}  {# |sort(attribute='lastname') %}#}
+                        <tbody>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            {#                        <th scope="row"><input type="checkbox" name='checks' value='{{ dat.id }}'></th>#}
+                            <th>{{ dat[0].lastname }}</th>
+                            <th>{{ dat[0].name }}</th>
+                            <th>
+                                <ul></ul>
+                            </th>
+                            <th>{{ dat[1].lastname }}</th>
+                            <th>
+                            {{ dat[1].name }}
+                            <th>
+
+                        </tr>
+
+                        </tbody>
+
+                    {% endfor %}
+                </table>
+
+                <input class="btn btn-primary" type="submit" value="Играть">
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+
+        </div>
+    </div>
+
+
+
+
+{% endblock %}

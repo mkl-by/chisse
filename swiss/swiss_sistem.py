@@ -1,0 +1,122 @@
+from flask import Blueprint, render_template, request, redirect, flash
+from flask_security import login_required
+from flask_paginate import Pagination, get_page_parameter
+from models import ChissePlayer
+from app import csrf, db
+from .forms import SelectForm, Nameturnir, Point
+import datetime
+from config import Configuration
+from .tablemake import Table
+
+swiss_sistem = Blueprint('swiss_sistem', __name__, template_folder='templates')
+csrf.exempt(swiss_sistem)
+table=Table() #экземпляр таблицы создаем объект таблицы
+
+@swiss_sistem.route('/', methods=['GET', 'POST'])
+# @login_required
+@csrf.exempt
+def swissistem():
+    player = ChissePlayer.query.order_by(ChissePlayer.lastname)
+    datta = ChissePlayer.query.order_by(ChissePlayer.datebirt).all()
+    form = SelectForm()
+
+    def yer():
+        # выбираем года из базы
+        return sorted(set([((g.datebirt.year), ((g.datebirt.year))) for g in datta]))
+
+    def parsdatetime(strdatayear):
+        # преобразуем в дату ('введенный год', первый месяц, первый день)
+        return datetime.datetime(int(strdatayear), 1, 1)
+
+    def pagin(players_chiss):
+        # pagination
+        page = request.args.get(get_page_parameter(), type=int, default=1)
+        pagination = Pagination(page=page, total=players_chiss.count(),
+                                bs_version=4)
+        return pagination
+
+    if request.method == 'POST':
+        start_data = parsdatetime(request.form['widget_policy'])
+        end_data = parsdatetime(request.form['end_data']).replace(day=31, month=12, hour=23, minute=59)
+        players_chiss = ChissePlayer.query.filter(ChissePlayer.datebirt >= start_data,
+                                                  ChissePlayer.datebirt <= end_data)
+        pagination = pagin(players_chiss)
+        pages = players_chiss.paginate(page=1, per_page=players_chiss.count())
+        return render_template('swiss.html', pages=pages, pagination=pagination, p_none=True)
+
+    form.widget_policy.choices = yer()
+    form.end_data.choices = yer()
+    pagination = pagin(player)
+    pages = player.paginate(per_page=10)
+    table.reset_players()
+
+    return render_template('swiss.html', pages=pages, form=form, pagination=pagination)
+
+
+@swiss_sistem.route('/table_party', methods=['GET', 'POST'])
+# @login_required
+@csrf.exempt
+def table_party():
+
+    if request.method == "POST":
+        id_player = request.form.getlist('checks')
+        id_arr = sorted(map(int, id_player))
+        if len(id_arr)<=1:
+            flash('Вы должны выбрать не менее двух игроков', 'warning')
+            return redirect('/swiss_sistem/')
+
+         # создаем турнирную таблицу
+
+        if table.dict_gamers!={}:
+            #в таблице есть данные не показывать таблицу,
+            #вернуться в
+            table.reset_players()
+            return redirect('/swiss_sistem/')
+
+
+        for id in id_arr:
+            table.create_players(id, ChissePlayer.query.get(id).name,
+                                 ChissePlayer.query.get(id).lastname)
+
+        play_tab=table.table_game() #возращает таблицу с объектами[(obj1, obj3),...(objs),(objn)]
+
+        form = Nameturnir()
+
+        return render_template('tabl.html', play_tab=play_tab, form=form)
+    return redirect('/')
+
+
+@swiss_sistem.route('/turnir', methods=['GET', 'POST'])
+# @login_required
+@csrf.exempt
+def turnir():
+
+    if request.method == "POST":
+        try:
+            total={}
+            nameturn = request.form['nameturnir']
+            table.nameturnir = nameturn
+        except:
+
+            table.add_tur() # увеличиваем циферку турнира
+
+             # [(id, point),(id, point),(id, point)]
+            for i in request.form:
+                if int(i):
+                    id=int(i)
+                    table.dict_gamers[id].win_points(float(request.form[i]), table.numbertur)
+
+            print(table)
+
+            for id in table.list_id_gamer:
+                if id:
+                    total[id] = table.dict_gamers[id].total_points
+
+        play_tab=table.table_game() #возращает таблицу с объектами[(obj1, obj3),...(objs),(objn)]
+
+
+        #form = Point()
+
+        return render_template('turnir.html',  play_tab=play_tab, total=total)
+
+    return render_template('turnir.html', play_tab=play_tab, total={})
