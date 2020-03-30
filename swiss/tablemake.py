@@ -1,6 +1,6 @@
 # from test5 import Listinstanse
 from operator import itemgetter
-
+import math
 
 class Gamer:
     def __init__(self, id, name, lastname):
@@ -17,6 +17,7 @@ class Gamer:
         self.point[numbertur] = pointt
         self.total_point()
 
+
     def pairs_of_players(self, idd, numbertur):
         '''словарь с кем играл в каждом туре'''
         self.gamers[numbertur] = idd
@@ -29,7 +30,7 @@ class Gamer:
             return 0
 
     def __repr__(self):
-        return '{0}.{1} {2}: point {3} - играл с {4} - всего очков={5}**\n'.format(
+        return '{0}.{1} {2}: point {3} - играл с {4} - очков={5}**\n'.format(
             self.id,
             self.lastname,
             self.name,
@@ -46,14 +47,28 @@ class Table:
         self.dict_gamers = {}
         self.list_id_gamer = []
         self.nameturnir=''
+        self.number_of_tuors=0
+        self.tur_table_all={}
 
     def add_tur(self):
         self.numbertur+=1
+
+    def table_tur_id_id(self):
+        """собираем все пары в единую таблицу"""
+        pass
+    # def number_of_tuors(self):
+    #     """рекомендуемое колличество туров"""
+    #     #n-число участников
+    #     # log2(n)колличество кругов
+    #     # m=(N*(log2N))/2
+    #     N=len(self.dict_gamers)
+    #     self.number_of_tuors=(N*math.log2(N))/2
 
     def create_players(self, id, name, lastname):
         '''создаем экземпляры игроков ложим в словарик по id'''
         self.dict_gamers[id] = Gamer(id, name, lastname)
         self.list_id_gamer.append(id)
+
 
     def reset_players(self):
         self.dict_gamers={}
@@ -128,7 +143,7 @@ class Table:
 
         print('турнирная таблица', game_tb)
 
-        # создаем таблицу из объектов
+        # создаем таблицу из объектов добавляем данные
         play_tb=[]
         for id in game_tb:
 
@@ -142,10 +157,18 @@ class Table:
             else:
                 play_tb.append((self.dict_gamers[id[0]],
                                 None))
-        if play_tb[0][1]==None:
-        #проверяем наличие None в начале списка
-        #если да то удаляем и вставляем в конец
-            play_tb.append(play_tb.pop(0))
+
+        try:
+            if play_tb[0][1]==None:
+            #проверяем наличие None в начале списка
+            #если да то удаляем и вставляем в конец
+                play_tb.append(play_tb.pop(0))
+        except IndexError:
+            return [('игра окончена')]
+
+        #Создаем таблицу общую за все туры
+        if self.numbertur:
+            self.tur_table_all[self.numbertur]=play_tb
 
 
         return play_tb
@@ -154,26 +177,6 @@ class Table:
         return '{0}'.format(self.dict_gamers)
 
 
-# if __name__ == '__main__':
-#     y = Table()
-#     ii = 0
-#     iii = 'a'
-#     # первый вызов инициализация таблицы игроков
-#     for i in range(10):
-#         y.create_players(i, iii, 'ddf')
-#         iii += 'a'
-#     print(y.dict_gamers)
-#
-#     import random
-#
-#     for j in range(4):
-#         y.numbertur = j
-#         for i in y.dict_gamers.keys():
-#             y.dict_gamers[i].win_points(random.randrange(0, 2, 1), j)
-#             y.dict_gamers[i].pairs_of_players(random.randrange(5), j)
-#
-#     print(y.dict_gamers)
-#     print('-----', y.table_game())
 
 
 

@@ -25,7 +25,7 @@
         }
 
         </script>
-
+X
     {% endblock scripts %}
 
     <div class="container">
@@ -34,7 +34,9 @@
             <h3>Таблица распределения по парам</h3>
             <p></p>
         </div>
+        <div class="row d-flex justify-content-center"> Тур № {{ numbertur }} {{ game_over }}</div>
         <div class="row d-flex justify-content-center">
+
             <form action="{{ url_for('swiss_sistem.turnir') }}" method="post" name="table">
                 {#        <div class="row d-flex justify-content-center">{{ form.nameturnir(size=30, class='text-center') }}</div>#}
                 <p></p>

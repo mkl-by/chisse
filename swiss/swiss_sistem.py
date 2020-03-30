@@ -113,10 +113,15 @@ def turnir():
                     total[id] = table.dict_gamers[id].total_points
 
         play_tab=table.table_game() #возращает таблицу с объектами[(obj1, obj3),...(objs),(objn)]
+        # проверяем окончание игры
+        if len(play_tab)==1 and type(play_tab[0])==str:
+            game_over=play_tab[0].upper()
+            nambertur=table.numbertur
+            return render_template('turnir.html', game_over=game_over, numbertur=nambertur)
+        else:
+            nambertur=table.numbertur+1
 
 
-        #form = Point()
-
-        return render_template('turnir.html',  play_tab=play_tab, total=total)
+        return render_template('turnir.html', play_tab=play_tab, total=total, numbertur=nambertur)
 
     return render_template('turnir.html', play_tab=play_tab, total={})
