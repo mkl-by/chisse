@@ -1,0 +1,43 @@
+{% extends 'index.html' %}
+{% block cont %}
+    {{ table.dict_gamers.values() }}
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <table class="table table-sm">
+
+            <thead>
+            <tr align="center">
+                <th scope="col">№</th>
+
+                <th scope="col">Фамилия и имя</th>
+                {% for tur in range(table.numbertur) %}
+                    <th scope="col">Тур {{ tur+1 }}</th>
+                {% endfor %}
+                <th scope="col">всего</th>
+                <th scope="col">Бергер</th>
+                <th scope="col">Бухгольц</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            {% for obj in table.dict_gamers.values() | sort(attribute='total_points',
+           reverse=true) %}
+            <tr align="center">
+                <th >{{ loop.index }} </th>
+                <td> {{ obj.lastname }} {{ obj.name }} </td>
+                {% for turr in range(table.numbertur) %}
+                    <td> {{ obj.point[turr+1]}} </td>
+                {% endfor %}
+                <td> {{ obj.total_points }} </td>
+                <td> {{ obj.berger }} </td>
+                <td> {{ obj.buchholz }} </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

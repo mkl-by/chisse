@@ -26,3 +26,7 @@ from models import  User, Role
 
 addmin- password
 
+
+netstat -tulpn
+kill -9 6989---номер процесса
+

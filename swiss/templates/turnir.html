@@ -10,31 +10,123 @@
 
     {% block scripts %}
         <script type="text/javascript">
-        {#если при отправке данных о заработанных очках на сервер есть пустая строка,
-         данные не отправляются#}
-        function nullstr() {
-            let inputs = table.getElementsByTagName('input');
-            for (let input of inputs) {
-                if (input.value == '') {
-                    input.style.background = 'red';
-                    alert('Вы не ввели все данные повторите ввод');
-                    return false;
+            {#если при отправке данных о заработанных очках на сервер есть пустая строка,
+             данные не отправляются#}
+
+            function nullstr() {
+                let inputs = table.getElementsByTagName('input');
+                for (let input of inputs) {
+                    if (input.value == '') {
+                        input.style.background = 'red';
+                        alert('Вы не ввели все данные повторите ввод');
+                        return false;
+                    }
                 }
+                return true;
             }
-            return true;
-        }
 
         </script>
-X
+
     {% endblock scripts %}
+
+        <style>
+            td{text-align: center;}
+            th{text-align: center;}
+            #center {text-align: center;}
+        </style>
+
+    {#----------------общая таблица за все туры-------------------#}
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+
+                    <form action="{{ url_for('swiss_sistem.save_summarytable') }}" method="post">
+                        <input class="btn btn-primary" type="submit" value="Записать данные в базу" >
+                    </form>
+
+        </div>
+        <div class="row d-flex justify-content-center">
+
+            {% for  key_tur, value_pair in tur_table_all.items() %}
+
+                <div class="col-md-auto"">
+                <table border="1" align="center" bordercolor="#a9a9a9" cellspacing="10" cellspacing="2">
+                    <thead>
+                    <tr>
+                        {#                    в тур добавить номер тура#}
+                        <th scope="col">{{ key_tur }}-й Тур</th>
+                        <th scope="col">Счет</th>
+                        <th scope="col">Участники</th>
+                        <th scope="col">Очки</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {% for value in value_pair  %}
+
+                        <tr>
+
+                            {% if value[1]!='BYE' %}
+                                <td >{{ value[0].lastname }} {{ value[0].name }}
+                                - {{ value[1].lastname }} {{ value[1].name }}</td>
+                                <td>{{ value[0].point[key_tur] }}:{{ value[1].point[key_tur] }}</td>
+                                <td>
+                                    <table>
+                                        <tr><td align="center">{{ value[0].lastname }}</td></tr>
+                                        <tr><td id="center">{{ value[1].lastname }}</td></tr>
+                                    </table>
+                                </td>
+                                <td>
+                                    <table>
+                                    <tr><td id="center">{{ value[0].total_points }}</td></tr>
+                                    <tr><td id="center">{{ value[1].total_points }}</td></tr>
+                                    </table>
+                                </td>
+
+                            {% else %}
+
+                                <td>{{ value[0].lastname }} {{ value[0].name }} - BYE </td>
+                                <td>{{ value[0].point[key_tur] }}: {{ value[1] }}</td>
+                                <td>
+                                    <table>
+                                        <tr><td align="center">{{ value[0].lastname }}</td></tr>
+                                        <tr><td id="center">{{ value[1] }}</td></tr>
+                                    </table>
+                                </td>
+                                <td>
+                                    <table>
+                                        <tr><td id="center" class="t" style="align-content: center">{{ value[0].total_points }}</td></tr>
+                                        <tr><td id="center">{{ value[1] }}</td></tr>
+                                    </table>
+                                </td>
+
+                            {% endif %}
+
+                        </tr>
+
+
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+                <p></p>
+                </div>
+
+            {% endfor %}
+    </div>
+
+    </div>
 
     <div class="container">
 
+        {#-------- таблица распределение по парам и выставление очков-----#}
         <div class="row d-flex justify-content-center">
             <h3>Таблица распределения по парам</h3>
             <p></p>
         </div>
-        <div class="row d-flex justify-content-center"> Тур № {{ numbertur }} {{ game_over }}</div>
+        <div class="row d-flex justify-content-center">
+            Тур № {{ numbertur }} {{ game_over }}
+        </div>
         <div class="row d-flex justify-content-center">
 
             <form action="{{ url_for('swiss_sistem.turnir') }}" method="post" name="table">
@@ -61,7 +153,7 @@ X
                         <tr>
 
                             <th></th>
-                            {#       <th scope="row"><input type="checkbox" name='checks' value='{{ dat.id }}'></th>#}
+
                             {% if dat[1].id %}
 
                                 <th>{{ dat[0].lastname }}</th>
@@ -88,9 +180,9 @@ X
                                 <th>{{ dat[1].lastname }}</th>
                                 <th>{{ dat[1].name }}
                                 <th>
-                                {% if total %}
-                                    <th class="text-center">{{ total.get(dat[1].id) }}</th>{% endif %}
-                                {#                                <th>{{ form.point(size=1, class='text-center', id=dat[1].id ) }}</th>#}
+                                    {% if total %}
+                                        <th class="text-center">{{ total.get(dat[1].id) }}</th>{% endif %}
+
                                 <th><input type="text" class="form-control form-control-sm text-center"
                                            pattern="[0][.][5]|[0]|[1]" size="1" name={{ dat[1].id }}></th>
                             {% endif %}
@@ -100,17 +192,20 @@ X
 
                     {% endfor %}
                 </table>
-                <input class="btn btn-primary" type="submit" value="Играть" onclick="return nullstr()">
+                {% if not game_over %}
+                    <input class="btn btn-primary" type="submit" value="Играть" onclick="return nullstr()">
+                {% endif %}
             </form>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
+
 
         </div>
+
+     <div class="row d-flex justify-content-center">
+            {% if game_over %}
+                    <form action="{{ url_for('swiss_sistem.save_summarytable') }}" method="post">
+                        <input class="btn btn-primary" type="submit" value="Записать данные в базу" >
+                    </form>
+                {% endif %}
+        </div>
     </div>
-
-
-
-
 {% endblock %}

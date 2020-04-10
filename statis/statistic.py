@@ -8,4 +8,4 @@ statistic=Blueprint('statistic', __name__, template_folder='templates')
 @statistic.route('/')
 @login_required
 def hello():
-    return render_template('ind.html')
+    return render_template('summarytable.html')

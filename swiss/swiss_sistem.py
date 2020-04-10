@@ -112,16 +112,35 @@ def turnir():
                 if id:
                     total[id] = table.dict_gamers[id].total_points
 
+        #tur_table_all=table.tur_table_all()
+        tur_table_all={}
+        tur_table_all=table.tur_table_summ()
+
         play_tab=table.table_game() #возращает таблицу с объектами[(obj1, obj3),...(objs),(objn)]
         # проверяем окончание игры
+
         if len(play_tab)==1 and type(play_tab[0])==str:
             game_over=play_tab[0].upper()
             nambertur=table.numbertur
-            return render_template('turnir.html', game_over=game_over, numbertur=nambertur)
+
+            return render_template('turnir.html', game_over=game_over, numbertur=nambertur, tur_table_all=tur_table_all)
         else:
             nambertur=table.numbertur+1
 
-
-        return render_template('turnir.html', play_tab=play_tab, total=total, numbertur=nambertur)
+        return render_template('turnir.html', tur_table_all=tur_table_all, play_tab=play_tab, total=total, numbertur=nambertur)
 
     return render_template('turnir.html', play_tab=play_tab, total={})
+
+@swiss_sistem.route('/turnir/end', methods=['GET', 'POST'])
+# @login_required
+@csrf.exempt
+def save_summarytable():
+    if request.method=="POST":
+        table.berger_coefficient()
+        table.buchholz_coefficient()
+        tab=table
+        tab.nan_tur() #вставляем '-' в турах которых не участвовал
+
+
+        # тута нужно сохранить усе у базу!!!!!!!!!!!!!!!!!!!
+        return render_template ('summarytable.html', table=tab)
