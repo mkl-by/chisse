@@ -135,12 +135,22 @@ def turnir():
 # @login_required
 @csrf.exempt
 def save_summarytable():
-    if request.method=="POST":
+    if request.method == "POST":
         table.berger_coefficient()
         table.buchholz_coefficient()
-        tab=table
+        tab = table
         tab.nan_tur() #вставляем '-' в турах которых не участвовал
+        # import json
+        # tablej=json.dumps(table.result())
+        # print(tablej)
 
-
+        # def fun(obj):
+        #     d={}
+        #     d.update(obj.__dict__)
+        #     return d
+        # import json
+        # # for i in tab:
+        # tab_json=json.dumps(tab, default=fun)
+        # print(tab_json)
         # тута нужно сохранить усе у базу!!!!!!!!!!!!!!!!!!!
         return render_template ('summarytable.html', table=tab)

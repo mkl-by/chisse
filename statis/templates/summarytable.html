@@ -1,21 +1,25 @@
 {% extends 'index.html' %}
+
 {% block cont %}
-    {{ table.dict_gamers.values() }}
+{#    {{ table.dict_gamers[4] }}#}
+{#   {{ table }}#}
 <div class="container">
     <div class="row d-flex justify-content-center">
-        <table class="table table-sm">
+        <datagrid>
+        <table id="example-table" class="table table-sm">
 
             <thead>
-            <tr align="center">
-                <th scope="col">№</th>
+            <tr >
 
                 <th scope="col">Фамилия и имя</th>
                 {% for tur in range(table.numbertur) %}
                     <th scope="col">Тур {{ tur+1 }}</th>
                 {% endfor %}
-                <th scope="col">всего</th>
+                <th scope="col">всего очков</th>
                 <th scope="col">Бергер</th>
                 <th scope="col">Бухгольц</th>
+                <th scope="col">id</th>
+                <th scope="col">gamers</th>
             </tr>
             </thead>
 
@@ -23,21 +27,77 @@
 
             {% for obj in table.dict_gamers.values() | sort(attribute='total_points',
            reverse=true) %}
-            <tr align="center">
-                <th >{{ loop.index }} </th>
+            <tr>
+
                 <td> {{ obj.lastname }} {{ obj.name }} </td>
                 {% for turr in range(table.numbertur) %}
                     <td> {{ obj.point[turr+1]}} </td>
+
                 {% endfor %}
                 <td> {{ obj.total_points }} </td>
                 <td> {{ obj.berger }} </td>
                 <td> {{ obj.buchholz }} </td>
-            </tr>
+                <td> {{ obj.id }}</td>
+
+                <td>{% for key in obj.gamers.keys()%}
+                        {% if obj.gamers[key] %}
+                            Тур{{ key }}: {{ table.dict_gamers[obj.gamers[key]].lastname}}{{ table.dict_gamers[obj.gamers[key]].name}}.
+                        {% else %}
+                            Тур{{ key }}: не играл.
+                        {% endif %}
+                    {% endfor %}
+                    </td>
+
+                    </tr>
             {% endfor %}
 
             </tbody>
         </table>
+        </datagrid>
     </div>
-</div>
+    </div>
+{% endblock %}
+
+{% block scriptik  %}
+
+    <link href="{{ url_for('static', filename='dist/css/tabulator.css') }}" rel="stylesheet">
+    <script src="{{url_for('static', filename='dist/js/tabulator.min.js')}}"></script>
+
+    <script>
+        {#интерактивная даблица для table, берем таблицу и преобразуем#}
+        var table=new Tabulator("#example-table",{
+            index: "id",
+            layout:"fitDataFill", {#  #}
+            placeholder:"Нет доступных данных",
+            cellHozAlign : "center",
+            responsiveLayout:"collapse",
+            updateColumnDefinition: ("gamers", {title:"Играл в турнире"}),
+            columns:[
+                {title:"Фамилия и имя", hozAlign:"left"},
+                {title: "id", visible : false},
+                {title: "gamers", hozAlign: "fitColumns", visible: false}
+                    ],
+            {#height:"300px",#}
+            {#row.update({field:"всего очков", hozAlign:"center"})#}
+
+            rowClick: function (e , row) {
+                    //e-объект click event
+                    // row - компонент строки
+             {#var data=row.getData();#}
+             {#var datajs=data.gamers;#}
+             {#alert(datajs)#}
+
+                table.showColumn("gamers")
+
+
+         },
+        })
+        table.updateColumnDefinition("gamers", {title:"С кем играл в турнире"});
+        {#столик .updateColumnDefinition ("name",  {title: "Updated Title"})#}
+        {#table.addColumn({title:"", field: "всего очков", hozAlign:"left", formatter:"progress"}, false, 'namme') //добавить колонку#}
+
+    </script>
+
+
 {% endblock %}
 

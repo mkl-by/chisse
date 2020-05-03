@@ -42,8 +42,7 @@ class Gamer:
             return 0
 
     def __repr__(self):
-        return '{0}.{1} {2}: point {3} - играл с {4} - очков={5}, бергер={6}, ' \
-               'бухольц={7}**\n'.format(
+        return '"id":{0}, "lastname":"{1}",  "name":"{2}",  "point":{3}, "gamers": {4}, "total_points":{5}, "berger":{6}, "buholts":{7}'.format(
             self.id,
             self.lastname,
             self.name,
@@ -66,8 +65,31 @@ class Table:
         self.tur_table_all = {}
         self.game_tb_all = []
 
+
+    # def result(self):
+    #     """для вывода в итоговую таблицу"""
+    #     t=[]
+    #     [t.append({'name':gamer.name,
+    #                 'lastname':gamer.lastname,
+    #                 'totalpoints':gamer.total_points,
+    #                'buchholz':gamer.buchholz,
+    #                'berger': gamer.berger,
+    #                'point':gamer.point})\
+    #      for gamer in self.dict_gamers.values()]
+    #     return t
+
+
     def add_tur(self):
         self.numbertur += 1
+
+    def __iter__(self):
+        """делаем объект итерируемым"""
+        for obj in self.dict_gamers.items():
+            yield obj
+
+    def __contains__(self, item):
+        """перехватывает in"""
+        return item in self.dict_gamers
 
     def buchholz_coefficient(self):
         """расчитываем коэффициент Бухольтца
@@ -164,6 +186,7 @@ class Table:
         self.dict_gamers[id] = Gamer(id, name, lastname)
         self.list_id_gamer.append(id)
         self.tur_table_all = {}
+        self.lendictgamers=len(self.dict_gamers)
 
     def reset_players(self):
         self.dict_gamers = {}
